@@ -56,6 +56,12 @@ export class ReservaService {
       );
     }
 
+    if (plan.incluyeAlojamiento && !data.alojamientoId) {
+      throw new ConflictException(
+        'Este plan requiere seleccionar un alojamiento.',
+      );
+    }
+
     const fechaIngreso = Temporal.Instant.from(data.fechaIngreso);
     const fechaSalida = Temporal.Instant.from(data.fechaSalida);
 
@@ -70,6 +76,7 @@ export class ReservaService {
         await this.obtenerAlojamientosDisponibles(
           data.fechaIngreso,
           data.fechaSalida,
+          data.cantidadHuespedes,
         );
 
       const alojamientoDisponible = alojamientosDisponibles.some(
@@ -88,6 +95,7 @@ export class ReservaService {
       planId: data.planId,
       precioPlan: plan.precio,
       alojamientoId: data.alojamientoId,
+      cantidadHuespedes: data.cantidadHuespedes,
       fechaIngreso,
       fechaSalida,
       estado: data.estado ?? 'PENDIENTE_PAGO',
@@ -114,13 +122,25 @@ export class ReservaService {
 
     const alojamientoId =
       data.alojamientoId ?? actual.alojamientoId ?? undefined;
+    const cantidadHuespedes =
+      data.cantidadHuespedes ?? actual.cantidadHuespedes;
+
+    const plan = await this.prisma.db.orm.public.Plan.first({
+      id: actual.planId,
+    });
+
+    if (plan?.incluyeAlojamiento && !alojamientoId) {
+      throw new ConflictException(
+        'Este plan requiere seleccionar un alojamiento.',
+      );
+    }
 
     if (alojamientoId) {
       const alojamientosDisponibles =
         await this.obtenerAlojamientosDisponibles(
           fechaIngreso,
           fechaSalida,
-          undefined,
+          cantidadHuespedes,
           id,
         );
 
@@ -139,6 +159,7 @@ export class ReservaService {
       .where({ id })
       .update({
         alojamientoId: data.alojamientoId,
+        cantidadHuespedes: data.cantidadHuespedes,
         fechaIngreso,
         fechaSalida,
         estado: data.estado,
@@ -231,7 +252,21 @@ export class ReservaService {
         tipo: alojamiento.tipo,
         capacidad: alojamiento.capacidad,
         descripcion: alojamiento.descripcion,
-      }));
+      }))
+      .sort((primero, segundo) => {
+        const diferenciaCapacidad =
+          primero.capacidad - segundo.capacidad;
+
+        if (diferenciaCapacidad !== 0) {
+          return diferenciaCapacidad;
+        }
+
+        if (primero.tipo === segundo.tipo) {
+          return primero.nombre.localeCompare(segundo.nombre);
+        }
+
+        return primero.tipo === 'HABITACION' ? -1 : 1;
+      });
   }
 
 }

@@ -1,0 +1,1387 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.acompanante",
+    "label": "Create table \"acompanante\"",
+    "summary": "Creates table \"acompanante\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"acompanante\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"acompanante\"",
+        "sql": "CREATE TABLE \"public\".\"acompanante\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"personaId\" text NOT NULL,\n  \"reservaId\" text NOT NULL,\n  \"tipoHuesped\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"acompanante_tipoHuesped_check_868d10e0\" CHECK (\"tipoHuesped\" IN ('ADULTO', 'NINO', 'BEBE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"acompanante\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.alojamiento",
+    "label": "Create table \"alojamiento\"",
+    "summary": "Creates table \"alojamiento\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "alojamiento"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"alojamiento\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"alojamiento\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"alojamiento\"",
+        "sql": "CREATE TABLE \"public\".\"alojamiento\" (\n  \"capacidad\" int4 NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"descripcion\" text,\n  \"estado\" text DEFAULT 'OPERATIVO' NOT NULL,\n  \"id\" text NOT NULL,\n  \"nombre\" text NOT NULL,\n  \"tipo\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"alojamiento_estado_check_d2557066\" CHECK (\"estado\" IN ('OPERATIVO', 'MANTENIMIENTO', 'FUERA_SERVICIO')),\n  CONSTRAINT \"alojamiento_tipo_check_f0bfe4af\" CHECK (\"tipo\" IN ('HABITACION', 'CABANA'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"alojamiento\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"alojamiento\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.persona",
+    "label": "Create table \"persona\"",
+    "summary": "Creates table \"persona\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "persona"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"persona\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"persona\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"persona\"",
+        "sql": "CREATE TABLE \"public\".\"persona\" (\n  \"contacto\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"documento\" text NOT NULL,\n  \"email\" text,\n  \"eps\" text,\n  \"fechaNacimiento\" timestamptz,\n  \"id\" text NOT NULL,\n  \"nombre\" text NOT NULL,\n  \"tipoDocumento\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"persona_tipoDocumento_check_0a53733e\" CHECK (\"tipoDocumento\" IN ('CC', 'CE', 'TI', 'PASAPORTE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"persona\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"persona\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.plan",
+    "label": "Create table \"plan\"",
+    "summary": "Creates table \"plan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "plan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"plan\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"plan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"plan\"",
+        "sql": "CREATE TABLE \"public\".\"plan\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"descripcion\" text,\n  \"id\" text NOT NULL,\n  \"nombre\" text NOT NULL,\n  \"precio\" float8 NOT NULL,\n  \"soloParejas\" bool DEFAULT false NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"plan\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"plan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.planServicio",
+    "label": "Create table \"planServicio\"",
+    "summary": "Creates table \"planServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "planServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"planServicio\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"planServicio\"",
+        "sql": "CREATE TABLE \"public\".\"planServicio\" (\n  \"planId\" text NOT NULL,\n  \"servicioId\" text NOT NULL,\n  PRIMARY KEY (\"planId\", \"servicioId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"planServicio\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.programacionPlan",
+    "label": "Create table \"programacionPlan\"",
+    "summary": "Creates table \"programacionPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "programacionPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"programacionPlan\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"programacionPlan\"",
+        "sql": "CREATE TABLE \"public\".\"programacionPlan\" (\n  \"activo\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"fechaFin\" timestamptz NOT NULL,\n  \"fechaInicio\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"observaciones\" text,\n  \"planId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"programacionPlan\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.reserva",
+    "label": "Create table \"reserva\"",
+    "summary": "Creates table \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"reserva\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"reserva\"",
+        "sql": "CREATE TABLE \"public\".\"reserva\" (\n  \"alojamientoId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"estado\" text DEFAULT 'PENDIENTE_PAGO' NOT NULL,\n  \"fechaIngreso\" timestamptz NOT NULL,\n  \"fechaSalida\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"observaciones\" text,\n  \"planId\" text NOT NULL,\n  \"precioPlan\" float8 NOT NULL,\n  \"titularId\" text NOT NULL,\n  \"total\" float8 NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"reserva_estado_check_dca8981a\" CHECK (\"estado\" IN ('PENDIENTE_PAGO', 'CONFIRMADA', 'CANCELADA'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"reserva\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.reservaServicio",
+    "label": "Create table \"reservaServicio\"",
+    "summary": "Creates table \"reservaServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "reservaServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"reservaServicio\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"reservaServicio\"",
+        "sql": "CREATE TABLE \"public\".\"reservaServicio\" (\n  \"cantidad\" int4 DEFAULT 1 NOT NULL,\n  \"precio\" float8 NOT NULL,\n  \"reservaId\" text NOT NULL,\n  \"servicioId\" text NOT NULL,\n  PRIMARY KEY (\"reservaId\", \"servicioId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"reservaServicio\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.servicio",
+    "label": "Create table \"servicio\"",
+    "summary": "Creates table \"servicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "servicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"servicio\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"servicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"servicio\"",
+        "sql": "CREATE TABLE \"public\".\"servicio\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"descripcion\" text,\n  \"id\" text NOT NULL,\n  \"nombre\" text NOT NULL,\n  \"precio\" float8 NOT NULL,\n  \"soloRomantico\" bool DEFAULT false NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"servicio\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"servicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.acompanante.acompanante_reservaId_personaId_key",
+    "label": "Add unique constraint on \"acompanante\" (reservaId, personaId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "acompanante_reservaId_personaId_key",
+        "table": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"acompanante_reservaId_personaId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_reservaId_personaId_key",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"acompanante_reservaId_personaId_key\"",
+        "sql": "ALTER TABLE \"public\".\"acompanante\" ADD CONSTRAINT \"acompanante_reservaId_personaId_key\" UNIQUE (\"reservaId\", \"personaId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"acompanante_reservaId_personaId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_reservaId_personaId_key",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.persona.persona_documento_key",
+    "label": "Add unique constraint on \"persona\" (documento)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "persona_documento_key",
+        "table": "persona"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"persona_documento_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "persona_documento_key",
+          "public",
+          "\"public\".\"persona\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"persona_documento_key\"",
+        "sql": "ALTER TABLE \"public\".\"persona\" ADD CONSTRAINT \"persona_documento_key\" UNIQUE (\"documento\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"persona_documento_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "persona_documento_key",
+          "public",
+          "\"public\".\"persona\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.plan.plan_nombre_key",
+    "label": "Add unique constraint on \"plan\" (nombre)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "plan_nombre_key",
+        "table": "plan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"plan_nombre_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "plan_nombre_key",
+          "public",
+          "\"public\".\"plan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"plan_nombre_key\"",
+        "sql": "ALTER TABLE \"public\".\"plan\" ADD CONSTRAINT \"plan_nombre_key\" UNIQUE (\"nombre\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"plan_nombre_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "plan_nombre_key",
+          "public",
+          "\"public\".\"plan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.servicio.servicio_nombre_key",
+    "label": "Add unique constraint on \"servicio\" (nombre)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "servicio_nombre_key",
+        "table": "servicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"servicio_nombre_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "servicio_nombre_key",
+          "public",
+          "\"public\".\"servicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"servicio_nombre_key\"",
+        "sql": "ALTER TABLE \"public\".\"servicio\" ADD CONSTRAINT \"servicio_nombre_key\" UNIQUE (\"nombre\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"servicio_nombre_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "servicio_nombre_key",
+          "public",
+          "\"public\".\"servicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.acompanante.acompanante_personaId_idx_758ca1fb",
+    "label": "Create index \"acompanante_personaId_idx_758ca1fb\" on \"acompanante\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "acompanante_personaId_idx_758ca1fb",
+        "table": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"acompanante_personaId_idx_758ca1fb\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante_personaId_idx_758ca1fb\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"acompanante_personaId_idx_758ca1fb\"",
+        "sql": "CREATE INDEX \"acompanante_personaId_idx_758ca1fb\" ON \"public\".\"acompanante\" (\"personaId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"acompanante_personaId_idx_758ca1fb\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante_personaId_idx_758ca1fb\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.acompanante.acompanante_reservaId_idx_178ec2fd",
+    "label": "Create index \"acompanante_reservaId_idx_178ec2fd\" on \"acompanante\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "acompanante_reservaId_idx_178ec2fd",
+        "table": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"acompanante_reservaId_idx_178ec2fd\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante_reservaId_idx_178ec2fd\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"acompanante_reservaId_idx_178ec2fd\"",
+        "sql": "CREATE INDEX \"acompanante_reservaId_idx_178ec2fd\" ON \"public\".\"acompanante\" (\"reservaId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"acompanante_reservaId_idx_178ec2fd\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"acompanante_reservaId_idx_178ec2fd\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.planServicio.planServicio_planId_idx_5b32079a",
+    "label": "Create index \"planServicio_planId_idx_5b32079a\" on \"planServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "planServicio_planId_idx_5b32079a",
+        "table": "planServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"planServicio_planId_idx_5b32079a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio_planId_idx_5b32079a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"planServicio_planId_idx_5b32079a\"",
+        "sql": "CREATE INDEX \"planServicio_planId_idx_5b32079a\" ON \"public\".\"planServicio\" (\"planId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"planServicio_planId_idx_5b32079a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio_planId_idx_5b32079a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.planServicio.planServicio_servicioId_idx_70be2758",
+    "label": "Create index \"planServicio_servicioId_idx_70be2758\" on \"planServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "planServicio_servicioId_idx_70be2758",
+        "table": "planServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"planServicio_servicioId_idx_70be2758\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio_servicioId_idx_70be2758\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"planServicio_servicioId_idx_70be2758\"",
+        "sql": "CREATE INDEX \"planServicio_servicioId_idx_70be2758\" ON \"public\".\"planServicio\" (\"servicioId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"planServicio_servicioId_idx_70be2758\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"planServicio_servicioId_idx_70be2758\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.programacionPlan.programacionPlan_fechaInicio_fechaFin_idx_0bdb592c",
+    "label": "Create index \"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\" on \"programacionPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "programacionPlan_fechaInicio_fechaFin_idx_0bdb592c",
+        "table": "programacionPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\"",
+        "sql": "CREATE INDEX \"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\" ON \"public\".\"programacionPlan\" (\"fechaInicio\", \"fechaFin\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan_fechaInicio_fechaFin_idx_0bdb592c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.programacionPlan.programacionPlan_planId_idx_5b32079a",
+    "label": "Create index \"programacionPlan_planId_idx_5b32079a\" on \"programacionPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "programacionPlan_planId_idx_5b32079a",
+        "table": "programacionPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"programacionPlan_planId_idx_5b32079a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan_planId_idx_5b32079a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"programacionPlan_planId_idx_5b32079a\"",
+        "sql": "CREATE INDEX \"programacionPlan_planId_idx_5b32079a\" ON \"public\".\"programacionPlan\" (\"planId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"programacionPlan_planId_idx_5b32079a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"programacionPlan_planId_idx_5b32079a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reserva.reserva_alojamientoId_idx_662b074b",
+    "label": "Create index \"reserva_alojamientoId_idx_662b074b\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reserva_alojamientoId_idx_662b074b",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reserva_alojamientoId_idx_662b074b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_alojamientoId_idx_662b074b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reserva_alojamientoId_idx_662b074b\"",
+        "sql": "CREATE INDEX \"reserva_alojamientoId_idx_662b074b\" ON \"public\".\"reserva\" (\"alojamientoId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reserva_alojamientoId_idx_662b074b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_alojamientoId_idx_662b074b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reserva.reserva_planId_idx_5b32079a",
+    "label": "Create index \"reserva_planId_idx_5b32079a\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reserva_planId_idx_5b32079a",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reserva_planId_idx_5b32079a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_planId_idx_5b32079a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reserva_planId_idx_5b32079a\"",
+        "sql": "CREATE INDEX \"reserva_planId_idx_5b32079a\" ON \"public\".\"reserva\" (\"planId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reserva_planId_idx_5b32079a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_planId_idx_5b32079a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reserva.reserva_titularId_idx_8aeff669",
+    "label": "Create index \"reserva_titularId_idx_8aeff669\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reserva_titularId_idx_8aeff669",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reserva_titularId_idx_8aeff669\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_titularId_idx_8aeff669\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reserva_titularId_idx_8aeff669\"",
+        "sql": "CREATE INDEX \"reserva_titularId_idx_8aeff669\" ON \"public\".\"reserva\" (\"titularId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reserva_titularId_idx_8aeff669\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reserva_titularId_idx_8aeff669\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reservaServicio.reservaServicio_reservaId_idx_178ec2fd",
+    "label": "Create index \"reservaServicio_reservaId_idx_178ec2fd\" on \"reservaServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reservaServicio_reservaId_idx_178ec2fd",
+        "table": "reservaServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reservaServicio_reservaId_idx_178ec2fd\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio_reservaId_idx_178ec2fd\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reservaServicio_reservaId_idx_178ec2fd\"",
+        "sql": "CREATE INDEX \"reservaServicio_reservaId_idx_178ec2fd\" ON \"public\".\"reservaServicio\" (\"reservaId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reservaServicio_reservaId_idx_178ec2fd\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio_reservaId_idx_178ec2fd\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.reservaServicio.reservaServicio_servicioId_idx_70be2758",
+    "label": "Create index \"reservaServicio_servicioId_idx_70be2758\" on \"reservaServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "reservaServicio_servicioId_idx_70be2758",
+        "table": "reservaServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"reservaServicio_servicioId_idx_70be2758\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio_servicioId_idx_70be2758\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"reservaServicio_servicioId_idx_70be2758\"",
+        "sql": "CREATE INDEX \"reservaServicio_servicioId_idx_70be2758\" ON \"public\".\"reservaServicio\" (\"servicioId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"reservaServicio_servicioId_idx_70be2758\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"reservaServicio_servicioId_idx_70be2758\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.acompanante.acompanante_reservaId_fkey",
+    "label": "Add foreign key \"acompanante_reservaId_fkey\" on \"acompanante\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "acompanante_reservaId_fkey",
+        "table": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"acompanante_reservaId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_reservaId_fkey",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"acompanante_reservaId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"acompanante\"\nADD CONSTRAINT \"acompanante_reservaId_fkey\"\nFOREIGN KEY (\"reservaId\")\nREFERENCES \"public\".\"reserva\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"acompanante_reservaId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_reservaId_fkey",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.acompanante.acompanante_personaId_fkey",
+    "label": "Add foreign key \"acompanante_personaId_fkey\" on \"acompanante\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "acompanante_personaId_fkey",
+        "table": "acompanante"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"acompanante_personaId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_personaId_fkey",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"acompanante_personaId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"acompanante\"\nADD CONSTRAINT \"acompanante_personaId_fkey\"\nFOREIGN KEY (\"personaId\")\nREFERENCES \"public\".\"persona\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"acompanante_personaId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "acompanante_personaId_fkey",
+          "public",
+          "\"public\".\"acompanante\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.planServicio.planServicio_planId_fkey",
+    "label": "Add foreign key \"planServicio_planId_fkey\" on \"planServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "planServicio_planId_fkey",
+        "table": "planServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"planServicio_planId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "planServicio_planId_fkey",
+          "public",
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"planServicio_planId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"planServicio\"\nADD CONSTRAINT \"planServicio_planId_fkey\"\nFOREIGN KEY (\"planId\")\nREFERENCES \"public\".\"plan\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"planServicio_planId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "planServicio_planId_fkey",
+          "public",
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.planServicio.planServicio_servicioId_fkey",
+    "label": "Add foreign key \"planServicio_servicioId_fkey\" on \"planServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "planServicio_servicioId_fkey",
+        "table": "planServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"planServicio_servicioId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "planServicio_servicioId_fkey",
+          "public",
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"planServicio_servicioId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"planServicio\"\nADD CONSTRAINT \"planServicio_servicioId_fkey\"\nFOREIGN KEY (\"servicioId\")\nREFERENCES \"public\".\"servicio\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"planServicio_servicioId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "planServicio_servicioId_fkey",
+          "public",
+          "\"public\".\"planServicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.programacionPlan.programacionPlan_planId_fkey",
+    "label": "Add foreign key \"programacionPlan_planId_fkey\" on \"programacionPlan\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "programacionPlan_planId_fkey",
+        "table": "programacionPlan"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"programacionPlan_planId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "programacionPlan_planId_fkey",
+          "public",
+          "\"public\".\"programacionPlan\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"programacionPlan_planId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"programacionPlan\"\nADD CONSTRAINT \"programacionPlan_planId_fkey\"\nFOREIGN KEY (\"planId\")\nREFERENCES \"public\".\"plan\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"programacionPlan_planId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "programacionPlan_planId_fkey",
+          "public",
+          "\"public\".\"programacionPlan\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reserva.reserva_titularId_fkey",
+    "label": "Add foreign key \"reserva_titularId_fkey\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reserva_titularId_fkey",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reserva_titularId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_titularId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reserva_titularId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reserva\"\nADD CONSTRAINT \"reserva_titularId_fkey\"\nFOREIGN KEY (\"titularId\")\nREFERENCES \"public\".\"persona\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reserva_titularId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_titularId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reserva.reserva_planId_fkey",
+    "label": "Add foreign key \"reserva_planId_fkey\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reserva_planId_fkey",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reserva_planId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_planId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reserva_planId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reserva\"\nADD CONSTRAINT \"reserva_planId_fkey\"\nFOREIGN KEY (\"planId\")\nREFERENCES \"public\".\"plan\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reserva_planId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_planId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reserva.reserva_alojamientoId_fkey",
+    "label": "Add foreign key \"reserva_alojamientoId_fkey\" on \"reserva\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reserva_alojamientoId_fkey",
+        "table": "reserva"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reserva_alojamientoId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_alojamientoId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reserva_alojamientoId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reserva\"\nADD CONSTRAINT \"reserva_alojamientoId_fkey\"\nFOREIGN KEY (\"alojamientoId\")\nREFERENCES \"public\".\"alojamiento\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reserva_alojamientoId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reserva_alojamientoId_fkey",
+          "public",
+          "\"public\".\"reserva\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reservaServicio.reservaServicio_reservaId_fkey",
+    "label": "Add foreign key \"reservaServicio_reservaId_fkey\" on \"reservaServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reservaServicio_reservaId_fkey",
+        "table": "reservaServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reservaServicio_reservaId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reservaServicio_reservaId_fkey",
+          "public",
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reservaServicio_reservaId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reservaServicio\"\nADD CONSTRAINT \"reservaServicio_reservaId_fkey\"\nFOREIGN KEY (\"reservaId\")\nREFERENCES \"public\".\"reserva\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reservaServicio_reservaId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reservaServicio_reservaId_fkey",
+          "public",
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.reservaServicio.reservaServicio_servicioId_fkey",
+    "label": "Add foreign key \"reservaServicio_servicioId_fkey\" on \"reservaServicio\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "reservaServicio_servicioId_fkey",
+        "table": "reservaServicio"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"reservaServicio_servicioId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reservaServicio_servicioId_fkey",
+          "public",
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"reservaServicio_servicioId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"reservaServicio\"\nADD CONSTRAINT \"reservaServicio_servicioId_fkey\"\nFOREIGN KEY (\"servicioId\")\nREFERENCES \"public\".\"servicio\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"reservaServicio_servicioId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "reservaServicio_servicioId_fkey",
+          "public",
+          "\"public\".\"reservaServicio\""
+        ]
+      }
+    ]
+  }
+]

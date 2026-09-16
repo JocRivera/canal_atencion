@@ -25,6 +25,7 @@ async function ensurePlan(data: {
   descripcion: string;
   precio: number;
   soloParejas?: boolean;
+  incluyeAlojamiento?: boolean;
 }) {
   const existente = await db.orm.public.Plan.first({
     nombre: data.nombre,
@@ -35,6 +36,7 @@ async function ensurePlan(data: {
     descripcion: data.descripcion,
     precio: data.precio,
     soloParejas: data.soloParejas ?? false,
+    incluyeAlojamiento: data.incluyeAlojamiento ?? false,
   });
 }
 
@@ -115,12 +117,14 @@ async function main() {
       nombre: 'Plan alojamiento',
       descripcion: 'Plan de alojamiento con alimentación completa.',
       precio: 280000,
+      incluyeAlojamiento: true,
     }),
     romantico: await ensurePlan({
       nombre: 'Plan romántico',
       descripcion: 'Plan para parejas con experiencias especiales.',
       precio: 420000,
       soloParejas: true,
+      incluyeAlojamiento: true,
     }),
   };
 
@@ -200,6 +204,7 @@ async function main() {
       planId: planes.alojamiento.id,
       precioPlan: planes.alojamiento.precio,
       alojamientoId: habitaciones[0].id,
+      cantidadHuespedes: 2,
       fechaIngreso,
       fechaSalida,
       estado: 'CONFIRMADA',

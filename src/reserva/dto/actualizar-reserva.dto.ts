@@ -1,6 +1,7 @@
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -8,6 +9,11 @@ import {
 } from 'class-validator';
 
 export class ActualizarReservaDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  cantidadHuespedes?: number;
+
   @IsOptional()
   @IsString()
   alojamientoId?: string;

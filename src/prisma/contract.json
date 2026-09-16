@@ -522,6 +522,13 @@
                   "kind": "scalar"
                 }
               },
+              "incluyeAlojamiento": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "nombre": {
                 "nullable": false,
                 "type": {
@@ -608,6 +615,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "incluyeAlojamiento": {
+                  "column": "incluyeAlojamiento"
                 },
                 "nombre": {
                   "column": "nombre"
@@ -807,6 +817,13 @@
                   "kind": "scalar"
                 }
               },
+              "cantidadHuespedes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -975,6 +992,9 @@
               "fields": {
                 "alojamientoId": {
                   "column": "alojamientoId"
+                },
+                "cantidadHuespedes": {
+                  "column": "cantidadHuespedes"
                 },
                 "createdAt": {
                   "column": "createdAt"
@@ -1520,6 +1540,15 @@
                   "nativeType": "text",
                   "nullable": false
                 },
+                "incluyeAlojamiento": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "nombre": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -1741,6 +1770,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "cantidadHuespedes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -2091,7 +2125,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "8542b29d0acf1673b6ad74e3d012d7ad4c658d480cce2ee1b7fe9afa28ce4db1"
+    "storageHash": "79a1ae55eda94ffcfb5e0c141ab25855d779a32fd8ce23ea6aa835cc4e3d5c19"
   },
   "execution": {
     "executionHash": "73977ed7438b367086e2107300fda75c6eaf437d94dd0b98e4c816151e0dd63f",

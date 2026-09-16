@@ -22,6 +22,11 @@ export class PlanController {
     return this.PlanService.obtenerTodos();
   }
 
+  @Get('detallados')
+  obtenerTodosEnriquecidos() {
+    return this.PlanService.obtenerTodosEnriquecidos();
+  }
+
   @Get('nombre/:nombre')
   obtenerPorNombre(@Param('nombre') nombre: string) {
     return this.PlanService.obtenerPorNombre(nombre);

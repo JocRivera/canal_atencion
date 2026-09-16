@@ -23,4 +23,8 @@ export class CrearPlanDto {
   @IsBoolean()
   @IsOptional()
   soloParejas?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  incluyeAlojamiento?: boolean;
 }

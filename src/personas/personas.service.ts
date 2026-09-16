@@ -30,6 +30,22 @@ export class PersonasService {
                 `No existe una persona con el documento ${documento}`,
             );
         }
+
+        return persona;
+    }
+
+    async obtenerPersonaPorContacto(contacto: string) {
+        const persona = await this.prisma.db.orm.public.Persona.first({
+            contacto,
+        });
+
+        if (!persona) {
+            throw new NotFoundException(
+                `No existe una persona con el contacto ${contacto}`,
+            );
+        }
+
+        return persona;
     }
 
     async crearPersona(data: CrearPersonaDto) {

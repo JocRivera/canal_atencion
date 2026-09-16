@@ -1,6 +1,7 @@
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
@@ -13,6 +14,10 @@ export class CrearReservaDto {
 
   @IsString()
   planId: string;
+
+  @IsInt()
+  @Min(1)
+  cantidadHuespedes: number;
 
   @IsOptional()
   @IsString()

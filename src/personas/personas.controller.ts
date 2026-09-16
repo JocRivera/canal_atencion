@@ -21,6 +21,11 @@ export class PersonasController {
     return this.personasService.obtenerPersonaPorDocumento(documento);
   }
 
+  @Get('contacto/:contacto')
+  obtenerPersonaPorContacto(@Param('contacto') contacto: string) {
+    return this.personasService.obtenerPersonaPorContacto(contacto);
+  }
+
   @Post()
   crearPersona(@Body() data: CrearPersonaDto) {
     return this.personasService.crearPersona(data);

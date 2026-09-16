@@ -19,6 +19,7 @@ model Plan {
   descripcion     String?
   precio          Float
   soloParejas     Boolean             @default(false)
+  incluyeAlojamiento Boolean           @default(false)
   createdAt       TimestamptzString   @default(now())
   updatedAt       temporal.updatedAtString()
 
@@ -62,6 +63,7 @@ model Reserva {
   planId          String
   precioPlan      Float
   alojamientoId   String?
+  cantidadHuespedes Int
   fechaIngreso    DateTime 
   fechaSalida     DateTime 
   estado          EstadoReserva  @default(PENDIENTE_PAGO)
