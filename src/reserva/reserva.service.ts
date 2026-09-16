@@ -56,19 +56,6 @@ export class ReservaService {
       );
     }
 
-    if (data.alojamientoId) {
-      const alojamiento =
-        await this.prisma.db.orm.public.Alojamiento.first({
-          id: data.alojamientoId,
-        });
-
-      if (!alojamiento) {
-        throw new NotFoundException(
-          `No existe el alojamiento con el id ${data.alojamientoId}`,
-        );
-      }
-    }
-
     const fechaIngreso = Temporal.Instant.from(data.fechaIngreso);
     const fechaSalida = Temporal.Instant.from(data.fechaSalida);
 
@@ -76,6 +63,24 @@ export class ReservaService {
       throw new ConflictException(
         'La fecha de salida debe ser posterior a la fecha de ingreso.',
       );
+    }
+
+    if (data.alojamientoId) {
+      const alojamientosDisponibles =
+        await this.obtenerAlojamientosDisponibles(
+          data.fechaIngreso,
+          data.fechaSalida,
+        );
+
+      const alojamientoDisponible = alojamientosDisponibles.some(
+        (alojamiento) => alojamiento.id === data.alojamientoId,
+      );
+
+      if (!alojamientoDisponible) {
+        throw new ConflictException(
+          'El alojamiento seleccionado no está disponible para esas fechas.',
+        );
+      }
     }
 
     return this.prisma.db.orm.public.Reserva.create({
@@ -134,4 +139,71 @@ export class ReservaService {
         estado: 'CANCELADA',
       });
   }
+
+  async obtenerAlojamientosDisponibles(
+    fechaIngresoTexto: string,
+    fechaSalidaTexto: string,
+    cantidadHuespedes?: number,
+  ) {
+    const fechaIngreso = Temporal.Instant.from(fechaIngresoTexto);
+    const fechaSalida = Temporal.Instant.from(fechaSalidaTexto);
+
+    if (Temporal.Instant.compare(fechaSalida, fechaIngreso) <= 0) {
+      throw new ConflictException(
+        'La fecha de salida debe ser posterior a la fecha de ingreso.',
+      );
+    }
+
+    const alojamientos =
+      await this.prisma.db.orm.public.Alojamiento.all();
+
+    const reservas = await this.prisma.db.orm.public.Reserva.all();
+
+    const reservasActivas = reservas.filter(
+      (reserva) =>
+        reserva.estado !== 'CANCELADA' &&
+        reserva.alojamientoId,
+    );
+
+    return alojamientos
+      .filter((alojamiento) => {
+        if (alojamiento.estado !== 'OPERATIVO') {
+          return false;
+        }
+
+        if (
+          cantidadHuespedes &&
+          alojamiento.capacidad < cantidadHuespedes
+        ) {
+          return false;
+        }
+
+        const ocupado = reservasActivas.some((reserva) => {
+          if (reserva.alojamientoId !== alojamiento.id) {
+            return false;
+          }
+
+          return (
+            Temporal.Instant.compare(
+              fechaIngreso,
+              reserva.fechaSalida,
+            ) < 0 &&
+            Temporal.Instant.compare(
+              fechaSalida,
+              reserva.fechaIngreso,
+            ) > 0
+          );
+        });
+
+        return !ocupado;
+      })
+      .map((alojamiento) => ({
+        id: alojamiento.id,
+        nombre: alojamiento.nombre,
+        tipo: alojamiento.tipo,
+        capacidad: alojamiento.capacidad,
+        descripcion: alojamiento.descripcion,
+      }));
+  }
+
 }
