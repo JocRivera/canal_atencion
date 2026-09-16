@@ -9,4 +9,4 @@ import { PlanService } from './plan.service.js';
   controllers: [PlanController],
   providers: [PlanService],
 })
-export class PlanesModule {}
+export class PlaneModule {}
