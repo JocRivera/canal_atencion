@@ -12,6 +12,8 @@ import { ServicioModule } from './servicio/servicio.module.js';
 import { AlojamientoController } from './alojamiento/alojamiento.controller.js';
 import { AlojamientoService } from './alojamiento/alojamiento.service.js';
 import { AlojamientoModule } from './alojamiento/alojamiento.module.js';
+import { PlanServicioModule } from './plan-servicio/plan-servicio.module.js';
+import { ReservaServicioModule } from './reserva-servicio/reserva-servicio.module.js';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { AlojamientoModule } from './alojamiento/alojamiento.module.js';
     ProgramacionModule,
     ServicioModule,
     AlojamientoModule,
+    PlanServicioModule,
+    ReservaServicioModule,
   ],
   controllers: [AppController, ProgramacionController, AlojamientoController],
   providers: [AppService, ProgramacionService, AlojamientoService],
