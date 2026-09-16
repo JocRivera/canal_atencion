@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
+import { AgenteService } from '../agente/agente.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { WhatsappService } from './whatsapp.service.js';
 
 type WhatsappMessage = {
   id?: string;
@@ -31,7 +33,11 @@ export type MensajeEntrante = {
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly agenteService: AgenteService,
+    private readonly whatsappService: WhatsappService,
+  ) {}
 
   verificarWhatsapp(mode: string, token: string, challenge: string) {
     const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
@@ -53,7 +59,18 @@ export class WebhookService {
     const mensajes = this.extraerMensajes(payload);
 
     for (const mensaje of mensajes) {
-      await this.guardarMensaje(mensaje);
+      const esNuevo = await this.guardarMensaje(mensaje);
+
+      if (esNuevo && mensaje.texto) {
+        const respuesta = await this.agenteService.procesarMensaje(
+          mensaje.texto,
+        );
+
+        await this.whatsappService.enviarTexto(
+          mensaje.identificadorExterno,
+          respuesta,
+        );
+      }
     }
 
     return {
@@ -88,7 +105,9 @@ export class WebhookService {
     return mensajes;
   }
 
-  private async guardarMensaje(mensaje: MensajeEntrante) {
+  private async guardarMensaje(
+    mensaje: MensajeEntrante,
+  ): Promise<boolean> {
     const conversacion =
       await this.prisma.db.orm.public.Conversacion.first({
         canal: mensaje.canal,
@@ -108,7 +127,7 @@ export class WebhookService {
         (item: { id?: string }) => item.id === mensaje.mensajeId,
       )
     ) {
-      return;
+      return false;
     }
 
     mensajes.push({
@@ -127,7 +146,7 @@ export class WebhookService {
           contexto,
           ultimoMensajeId: mensaje.mensajeId,
         });
-      return;
+      return true;
     }
 
     await this.prisma.db.orm.public.Conversacion.create({
@@ -141,5 +160,7 @@ export class WebhookService {
     this.logger.debug(
       `Conversación creada para ${mensaje.identificadorExterno}`,
     );
+
+    return true;
   }
 }

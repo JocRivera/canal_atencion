@@ -19,5 +19,6 @@ import { PlanModule } from '../plan/plan.module.js';
     OllamaService,
     ConsultarPlanesSkill,
   ],
+  exports: [AgenteService],
 })
 export class AgenteModule {}

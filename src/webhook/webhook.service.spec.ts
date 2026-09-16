@@ -3,6 +3,8 @@ import { WebhookService } from './webhook.service.js';
 describe('WebhookService', () => {
   let service: WebhookService;
   let prisma: any;
+  let agenteService: any;
+  let whatsappService: any;
 
   beforeEach(() => {
     prisma = {
@@ -19,7 +21,20 @@ describe('WebhookService', () => {
       },
     };
 
-    service = new WebhookService(prisma);
+    agenteService = {
+      procesarMensaje: vi
+        .fn()
+        .mockResolvedValue('Respuesta del agente'),
+    };
+    whatsappService = {
+      enviarTexto: vi.fn().mockResolvedValue({ messages: [] }),
+    };
+
+    service = new WebhookService(
+      prisma,
+      agenteService,
+      whatsappService,
+    );
   });
 
   it('acepta la verificación de WhatsApp con el token configurado', () => {
@@ -84,6 +99,13 @@ describe('WebhookService', () => {
         estado: 'INICIO',
         ultimoMensajeId: 'wamid-1',
       }),
+    );
+    expect(agenteService.procesarMensaje).toHaveBeenCalledWith(
+      'Buen día',
+    );
+    expect(whatsappService.enviarTexto).toHaveBeenCalledWith(
+      '573001234567',
+      'Respuesta del agente',
     );
   });
 });

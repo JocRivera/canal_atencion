@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Post,
-  Get,
 } from '@nestjs/common';
 
 import { AgenteService } from './agente.service.js';
