@@ -12,6 +12,7 @@ import { PlanServicioModule } from './plan-servicio/plan-servicio.module.js';
 import { ReservaServicioModule } from './reserva-servicio/reserva-servicio.module.js';
 import { ReservaModule } from './reserva/reserva.module.js';
 import { WebhookModule } from './webhook/webhook.module.js';
+import { AgenteModule } from './agente/agente.module.js';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WebhookModule } from './webhook/webhook.module.js';
     ReservaServicioModule,
     ReservaModule,
     WebhookModule,
+    AgenteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

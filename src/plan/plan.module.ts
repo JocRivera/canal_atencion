@@ -8,5 +8,6 @@ import { PlanService } from './plan.service.js';
   imports: [PrismaModule],
   controllers: [PlanController],
   providers: [PlanService],
+  exports: [PlanService],
 })
 export class PlanModule {}
