@@ -56,6 +56,12 @@ export class ReservaService {
       );
     }
 
+    if (plan.incluyeAlojamiento && !data.alojamientoId) {
+      throw new ConflictException(
+        'Este plan requiere seleccionar un alojamiento.',
+      );
+    }
+
     const fechaIngreso = Temporal.Instant.from(data.fechaIngreso);
     const fechaSalida = Temporal.Instant.from(data.fechaSalida);
 
@@ -70,6 +76,7 @@ export class ReservaService {
         await this.obtenerAlojamientosDisponibles(
           data.fechaIngreso,
           data.fechaSalida,
+          data.cantidadHuespedes,
         );
 
       const alojamientoDisponible = alojamientosDisponibles.some(
@@ -88,6 +95,7 @@ export class ReservaService {
       planId: data.planId,
       precioPlan: plan.precio,
       alojamientoId: data.alojamientoId,
+      cantidadHuespedes: data.cantidadHuespedes,
       fechaIngreso,
       fechaSalida,
       estado: data.estado ?? 'PENDIENTE_PAGO',
@@ -97,23 +105,52 @@ export class ReservaService {
   }
 
   async actualizar(id: string, data: ActualizarReservaDto) {
-    await this.obtenerPorId(id);
+    const actual = await this.obtenerPorId(id);
 
-    let fechaIngreso: Temporal.Instant | undefined;
-    let fechaSalida: Temporal.Instant | undefined;
+    const fechaIngreso = data.fechaIngreso
+      ? Temporal.Instant.from(data.fechaIngreso)
+      : actual.fechaIngreso;
+    const fechaSalida = data.fechaSalida
+      ? Temporal.Instant.from(data.fechaSalida)
+      : actual.fechaSalida;
 
-    if (data.fechaIngreso) {
-      fechaIngreso = Temporal.Instant.from(data.fechaIngreso);
+    if (Temporal.Instant.compare(fechaSalida, fechaIngreso) <= 0) {
+      throw new ConflictException(
+        'La fecha de salida debe ser posterior a la fecha de ingreso.',
+      );
     }
 
-    if (data.fechaSalida) {
-      fechaSalida = Temporal.Instant.from(data.fechaSalida);
+    const alojamientoId =
+      data.alojamientoId ?? actual.alojamientoId ?? undefined;
+    const cantidadHuespedes =
+      data.cantidadHuespedes ?? actual.cantidadHuespedes;
+
+    const plan = await this.prisma.db.orm.public.Plan.first({
+      id: actual.planId,
+    });
+
+    if (plan?.incluyeAlojamiento && !alojamientoId) {
+      throw new ConflictException(
+        'Este plan requiere seleccionar un alojamiento.',
+      );
     }
 
-    if (fechaIngreso && fechaSalida) {
-      if (Temporal.Instant.compare(fechaSalida, fechaIngreso) <= 0) {
+    if (alojamientoId) {
+      const alojamientosDisponibles =
+        await this.obtenerAlojamientosDisponibles(
+          fechaIngreso,
+          fechaSalida,
+          cantidadHuespedes,
+          id,
+        );
+
+      if (
+        !alojamientosDisponibles.some(
+          (alojamiento) => alojamiento.id === alojamientoId,
+        )
+      ) {
         throw new ConflictException(
-          'La fecha de salida debe ser posterior a la fecha de ingreso.',
+          'El alojamiento seleccionado no está disponible para esas fechas.',
         );
       }
     }
@@ -122,6 +159,7 @@ export class ReservaService {
       .where({ id })
       .update({
         alojamientoId: data.alojamientoId,
+        cantidadHuespedes: data.cantidadHuespedes,
         fechaIngreso,
         fechaSalida,
         estado: data.estado,
@@ -141,12 +179,19 @@ export class ReservaService {
   }
 
   async obtenerAlojamientosDisponibles(
-    fechaIngresoTexto: string,
-    fechaSalidaTexto: string,
+    fechaIngresoTexto: string | Temporal.Instant,
+    fechaSalidaTexto: string | Temporal.Instant,
     cantidadHuespedes?: number,
+    reservaIdExcluir?: string,
   ) {
-    const fechaIngreso = Temporal.Instant.from(fechaIngresoTexto);
-    const fechaSalida = Temporal.Instant.from(fechaSalidaTexto);
+    const fechaIngreso =
+      typeof fechaIngresoTexto === 'string'
+        ? Temporal.Instant.from(fechaIngresoTexto)
+        : fechaIngresoTexto;
+    const fechaSalida =
+      typeof fechaSalidaTexto === 'string'
+        ? Temporal.Instant.from(fechaSalidaTexto)
+        : fechaSalidaTexto;
 
     if (Temporal.Instant.compare(fechaSalida, fechaIngreso) <= 0) {
       throw new ConflictException(
@@ -179,6 +224,10 @@ export class ReservaService {
         }
 
         const ocupado = reservasActivas.some((reserva) => {
+          if (reservaIdExcluir && reserva.id === reservaIdExcluir) {
+            return false;
+          }
+
           if (reserva.alojamientoId !== alojamiento.id) {
             return false;
           }
@@ -203,7 +252,21 @@ export class ReservaService {
         tipo: alojamiento.tipo,
         capacidad: alojamiento.capacidad,
         descripcion: alojamiento.descripcion,
-      }));
+      }))
+      .sort((primero, segundo) => {
+        const diferenciaCapacidad =
+          primero.capacidad - segundo.capacidad;
+
+        if (diferenciaCapacidad !== 0) {
+          return diferenciaCapacidad;
+        }
+
+        if (primero.tipo === segundo.tipo) {
+          return primero.nombre.localeCompare(segundo.nombre);
+        }
+
+        return primero.tipo === 'HABITACION' ? -1 : 1;
+      });
   }
 
 }

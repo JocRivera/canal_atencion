@@ -1,0 +1,83 @@
+[
+  {
+    "id": "table.conversacion",
+    "label": "Create table \"conversacion\"",
+    "summary": "Creates table \"conversacion\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "conversacion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"conversacion\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversacion\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"conversacion\"",
+        "sql": "CREATE TABLE \"public\".\"conversacion\" (\n  \"canal\" text NOT NULL,\n  \"contexto\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"estado\" text DEFAULT 'INICIO' NOT NULL,\n  \"id\" text NOT NULL,\n  \"identificadorExterno\" text NOT NULL,\n  \"ultimoMensajeId\" text,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"conversacion\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversacion\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.conversacion.conversacion_canal_identificadorExterno_key",
+    "label": "Add unique constraint on \"conversacion\" (canal, identificadorExterno)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "conversacion_canal_identificadorExterno_key",
+        "table": "conversacion"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"conversacion_canal_identificadorExterno_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversacion_canal_identificadorExterno_key",
+          "public",
+          "\"public\".\"conversacion\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"conversacion_canal_identificadorExterno_key\"",
+        "sql": "ALTER TABLE \"public\".\"conversacion\" ADD CONSTRAINT \"conversacion_canal_identificadorExterno_key\" UNIQUE (\"canal\", \"identificadorExterno\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"conversacion_canal_identificadorExterno_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversacion_canal_identificadorExterno_key",
+          "public",
+          "\"public\".\"conversacion\""
+        ]
+      }
+    ]
+  }
+]

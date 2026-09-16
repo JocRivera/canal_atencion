@@ -16,6 +16,31 @@ export class PlanService {
     return await this.prisma.db.orm.public.Plan.all();
   }
 
+  async obtenerTodosEnriquecidos() {
+    const planes = await this.prisma.db.orm.public.Plan.all();
+
+    return Promise.all(
+      planes.map(async (plan) => {
+        const relaciones = await this.prisma.db.orm.public.PlanServicio
+          .where({ planId: plan.id })
+          .all();
+
+        const servicios = await Promise.all(
+          relaciones.map((relacion) =>
+            this.prisma.db.orm.public.Servicio.first({
+              id: relacion.servicioId,
+            }),
+          ),
+        );
+
+        return {
+          ...plan,
+          servicios: servicios.filter(Boolean),
+        };
+      }),
+    );
+  }
+
   async obtenerPorId(id: string) {
     const plan =
       await this.prisma.db.orm.public.Plan.first({ id });
@@ -61,6 +86,7 @@ export class PlanService {
       descripcion: data.descripcion,
       precio: data.precio,
       soloParejas: data.soloParejas ?? false,
+      incluyeAlojamiento: data.incluyeAlojamiento ?? false,
     });
   }
 
@@ -74,6 +100,7 @@ export class PlanService {
         descripcion: data.descripcion,
         precio: data.precio,
         soloParejas: data.soloParejas,
+        incluyeAlojamiento: data.incluyeAlojamiento,
       });
   }
 }

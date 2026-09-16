@@ -23,4 +23,8 @@ export class ActualizarPlanDto {
   @IsOptional()
   @IsBoolean()
   soloParejas?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  incluyeAlojamiento?: boolean;
 }

@@ -12,6 +12,10 @@
       "model": "Alojamiento",
       "namespace": "public"
     },
+    "conversacion": {
+      "model": "Conversacion",
+      "namespace": "public"
+    },
     "persona": {
       "model": "Persona",
       "namespace": "public"
@@ -351,6 +355,97 @@
               "table": "alojamiento"
             }
           },
+          "Conversacion": {
+            "fields": {
+              "canal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "contexto": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "estado": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "identificadorExterno": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ultimoMensajeId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "canal": {
+                  "column": "canal"
+                },
+                "contexto": {
+                  "column": "contexto"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "estado": {
+                  "column": "estado"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "identificadorExterno": {
+                  "column": "identificadorExterno"
+                },
+                "ultimoMensajeId": {
+                  "column": "ultimoMensajeId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "conversacion"
+            }
+          },
           "Persona": {
             "fields": {
               "contacto": {
@@ -522,6 +617,13 @@
                   "kind": "scalar"
                 }
               },
+              "incluyeAlojamiento": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "nombre": {
                 "nullable": false,
                 "type": {
@@ -608,6 +710,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "incluyeAlojamiento": {
+                  "column": "incluyeAlojamiento"
                 },
                 "nombre": {
                   "column": "nombre"
@@ -807,6 +912,13 @@
                   "kind": "scalar"
                 }
               },
+              "cantidadHuespedes": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -975,6 +1087,9 @@
               "fields": {
                 "alojamientoId": {
                   "column": "alojamientoId"
+                },
+                "cantidadHuespedes": {
+                  "column": "cantidadHuespedes"
                 },
                 "createdAt": {
                   "column": "createdAt"
@@ -1414,6 +1529,73 @@
               },
               "uniques": []
             },
+            "conversacion": {
+              "columns": {
+                "canal": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "contexto": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "estado": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "INICIO"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "identificadorExterno": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "ultimoMensajeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "canal",
+                    "identificadorExterno"
+                  ]
+                }
+              ]
+            },
             "persona": {
               "checks": [
                 {
@@ -1518,6 +1700,15 @@
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": false
+                },
+                "incluyeAlojamiento": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
                   "nullable": false
                 },
                 "nombre": {
@@ -1741,6 +1932,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
+                },
+                "cantidadHuespedes": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
                 },
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -2091,10 +2287,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "8542b29d0acf1673b6ad74e3d012d7ad4c658d480cce2ee1b7fe9afa28ce4db1"
+    "storageHash": "9f1db085b884a6d4871eac86665170e4a27cbb1fae8429eb4488c985a5ca2fc0"
   },
   "execution": {
-    "executionHash": "73977ed7438b367086e2107300fda75c6eaf437d94dd0b98e4c816151e0dd63f",
+    "executionHash": "5a1a34855fe91979c7e292441eb7ecb84650d8e00391ae303cb3779491471147",
     "mutations": {
       "defaults": [
         {
@@ -2132,6 +2328,32 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "alojamiento"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "id",
+            "namespace": "public",
+            "table": "conversacion"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "conversacion"
           }
         },
         {

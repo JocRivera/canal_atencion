@@ -1,10 +1,10 @@
 import {
   IsDateString,
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
-  IsUUID,
   Min,
 } from 'class-validator';
 
@@ -14,6 +14,10 @@ export class CrearReservaDto {
 
   @IsString()
   planId: string;
+
+  @IsInt()
+  @Min(1)
+  cantidadHuespedes: number;
 
   @IsOptional()
   @IsString()

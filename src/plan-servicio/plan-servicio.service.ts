@@ -87,8 +87,9 @@ export class PlanServicioService {
         'El servicio no está asociado a este plan.',
       );
     }
-
-    // Aquí utilizamos la API de actualización/eliminación
-    // generada por Prisma 8 según el contrato actual.
+    return await this.prisma.db.orm.public.PlanServicio.where({
+      planId,
+      servicioId,
+    }).delete();
   }
 }
