@@ -55,4 +55,28 @@ export class PersonasService {
             eps: data.eps,
         });
     }
+    
+    async actualizarPersona(id: string, data: CrearPersonaDto) {
+        const persona = await this.prisma.db.orm.public.Persona
+            .where({ id })
+            .update({
+                tipoDocumento: data.tipoDocumento,
+                documento: data.documento,
+                nombre: data.nombre,
+                fechaNacimiento: data.fechaNacimiento
+                    ? Temporal.Instant.from(`${data.fechaNacimiento}T00:00:00Z`)
+                    : undefined,
+                contacto: data.contacto,
+                email: data.email,
+                eps: data.eps,
+            });
+
+        if (!persona) {
+            throw new NotFoundException(
+                `No existe una persona con el id ${id}`,
+            );
+        }
+
+        return persona;
+    }
 }

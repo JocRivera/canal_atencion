@@ -25,4 +25,9 @@ export class PersonasController {
   crearPersona(@Body() data: CrearPersonaDto) {
     return this.personasService.crearPersona(data);
   }
+
+  @Post(':id')
+  actualizarPersona(@Param('id') id: string, @Body() data: CrearPersonaDto) {
+    return this.personasService.actualizarPersona(id, data);
+  }
 }
