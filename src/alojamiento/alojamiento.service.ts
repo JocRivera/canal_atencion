@@ -32,9 +32,9 @@ export class AlojamientoService {
   }
 
   async obtenerPorTipo(tipo: 'HABITACION' | 'CABANA') {
-    return await this.prisma.db.orm.public.Alojamiento.where({
-      tipo,
-    });
+    return this.prisma.db.orm.public.Alojamiento
+      .where({ tipo })
+      .all();
   }
 
   async crear(data: CrearAlojamientoDto) {
