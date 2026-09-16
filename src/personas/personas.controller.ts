@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { PersonasService } from './personas.service.js';
 import { CrearPersonaDto } from './dto/crear-persona.dto.js';
 
@@ -26,7 +26,7 @@ export class PersonasController {
     return this.personasService.crearPersona(data);
   }
 
-  @Post(':id')
+  @Patch(':id')
   actualizarPersona(@Param('id') id: string, @Body() data: CrearPersonaDto) {
     return this.personasService.actualizarPersona(id, data);
   }
