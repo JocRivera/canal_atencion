@@ -5,11 +5,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 
 import { ReservaService } from './reserva.service.js';
 import { CrearReservaDto } from './dto/crear-reserva.dto.js';
 import { ActualizarReservaDto } from './dto/actualizar-reserva.dto.js';
+import { ConsultarDisponibilidadDto } from './dto/consultar-disponibilidad.dto.js';
 
 @Controller('reservas')
 export class ReservaController {
@@ -23,6 +25,17 @@ export class ReservaController {
   @Get('titular/:titularId')
   obtenerPorTitular(@Param('titularId') titularId: string) {
     return this.reservaService.obtenerPorTitular(titularId);
+  }
+
+  @Get('disponibles')
+  obtenerAlojamientosDisponibles(
+    @Query() data: ConsultarDisponibilidadDto,
+  ) {
+    return this.reservaService.obtenerAlojamientosDisponibles(
+      data.fechaIngreso,
+      data.fechaSalida,
+      data.cantidadHuespedes,
+    );
   }
 
   @Get(':id')
