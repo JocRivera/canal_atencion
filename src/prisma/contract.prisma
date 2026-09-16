@@ -1,0 +1,195 @@
+// use prisma-8
+
+model Servicio {
+  id              String             @id @default(uuid())
+  nombre          String             @unique
+  descripcion     String?
+  precio          Float
+  soloRomantico   Boolean            @default(false)
+  createdAt       TimestamptzString  @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  reservas        ReservaServicio[]
+  planes          PlanServicio[]
+}
+
+model Plan {
+  id              String              @id @default(uuid())
+  nombre          String              @unique
+  descripcion     String?
+  precio          Float
+  soloParejas     Boolean             @default(false)
+  createdAt       TimestamptzString   @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  servicios       PlanServicio[]
+  reservas        Reserva[]
+  programaciones ProgramacionPlan[]
+}
+
+model Alojamiento {
+  id                String          @id @default(uuid())
+  nombre            String
+  tipo              TipoAlojamiento
+  capacidad         Int
+  descripcion       String?
+  estado            EstadoAlojamiento  @default(OPERATIVO)
+  createdAt         TimestamptzString @default(now())
+  updatedAt         temporal.updatedAtString()
+
+  reservas          Reserva[]
+}
+
+model Persona {
+  id              String         @id @default(uuid())
+  tipoDocumento   TipoDocumento
+  documento       String         @unique
+  nombre          String
+  fechaNacimiento DateTime?
+  contacto        String
+  email           String?
+  eps             String?
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  reservas        Reserva[]
+  acompanantes    Acompanante[]
+}
+
+model Reserva {
+  id              String         @id @default(uuid())
+  titularId       String
+  planId          String
+  precioPlan      Float
+  alojamientoId   String?
+  fechaIngreso    DateTime 
+  fechaSalida     DateTime 
+  estado          EstadoReserva  @default(PENDIENTE_PAGO)
+  total            Float
+  observaciones    String?
+  createdAt        TimestamptzString @default(now())
+  updatedAt        temporal.updatedAtString()
+
+  titular         Persona        @relation(
+    fields: [titularId],
+    references: [id]
+  )
+
+  plan            Plan           @relation(
+    fields: [planId],
+    references: [id]
+  )
+
+  alojamiento     Alojamiento?   @relation(
+    fields: [alojamientoId],
+    references: [id]
+  )
+
+  acompanantes    Acompanante[]
+  servicios       ReservaServicio[]
+}
+
+model Acompanante {
+  id              String         @id @default(uuid())
+  reservaId       String
+  personaId       String
+  tipoHuesped     TipoHuesped
+  createdAt       TimestamptzString @default(now())
+
+  reserva         Reserva        @relation(
+    fields: [reservaId],
+    references: [id]
+  )
+
+  persona         Persona        @relation(
+    fields: [personaId],
+    references: [id]
+  )
+
+  @@unique([reservaId, personaId])
+}
+
+enum TipoDocumento {
+  CC
+  CE
+  TI
+  PASAPORTE
+}
+
+enum TipoHuesped {
+  ADULTO
+  NINO
+  BEBE
+}
+
+enum EstadoReserva {
+  PENDIENTE_PAGO
+  CONFIRMADA
+  CANCELADA
+}
+
+enum TipoAlojamiento {
+  HABITACION
+  CABANA
+}
+
+enum EstadoAlojamiento {
+  OPERATIVO
+  MANTENIMIENTO
+  FUERA_SERVICIO
+}
+
+model PlanServicio {
+  planId      String
+  servicioId  String
+
+  plan        Plan      @relation(
+    fields: [planId],
+    references: [id]
+  )
+
+  servicio    Servicio  @relation(
+    fields: [servicioId],
+    references: [id]
+  )
+
+  @@id([planId, servicioId])
+}
+
+model ReservaServicio {
+  reservaId   String
+  servicioId  String
+  cantidad    Int       @default(1)
+  precio      Float
+
+  reserva     Reserva   @relation(
+    fields: [reservaId],
+    references: [id]
+  )
+
+  servicio    Servicio  @relation(
+    fields: [servicioId],
+    references: [id]
+  )
+
+  @@id([reservaId, servicioId])
+}
+
+model ProgramacionPlan {
+  id              String              @id @default(uuid())
+  planId          String
+  fechaInicio     DateTime
+  fechaFin        DateTime
+  activo          Boolean             @default(true)
+  observaciones   String?
+  createdAt       TimestamptzString   @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  plan            Plan                @relation(
+    fields: [planId],
+    references: [id]
+  )
+
+  @@index([planId])
+  @@index([fechaInicio, fechaFin])
+}
