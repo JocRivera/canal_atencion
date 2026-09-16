@@ -11,7 +11,7 @@ import { ProgramacionService } from './programacion.service.js';
 import { CrearProgramacionPlanDto } from './dto/crear-programacion-plan.dto.js';
 import { ActualizarProgramacionPlanDto } from './dto/actualizar-programacion-plan.dto.js';
 
-@Controller('programacion-planes')
+@Controller('programacion-plan')
 export class ProgramacionController {
     constructor(
         private readonly programacionService: ProgramacionService,
