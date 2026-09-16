@@ -177,6 +177,19 @@ model ReservaServicio {
   @@id([reservaId, servicioId])
 }
 
+model Conversacion {
+  id                   String   @id @default(uuid())
+  canal                String
+  identificadorExterno String
+  estado               String   @default("INICIO")
+  contexto             String?
+  ultimoMensajeId      String?
+  createdAt            TimestamptzString @default(now())
+  updatedAt            temporal.updatedAtString()
+
+  @@unique([canal, identificadorExterno])
+}
+
 model ProgramacionPlan {
   id              String              @id @default(uuid())
   planId          String
